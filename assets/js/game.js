@@ -44,6 +44,7 @@ if(!player1Selected && !player2Selected){
 p1.name = $("#name-input").val().trim();
 console.log(p1);
 database.ref().set({
+        round: round,
          p1: p1,
          p2: p2,
          player1Selected : true,
@@ -51,20 +52,23 @@ database.ref().set({
 
       });
       
-      $("#p1-display").text(p1.name + "You are Player 1")
+      $("#p1-display").text("Welcome " + p1.name + "! You are Player 1. Click any of the below buttons to make your first choice")
+      $("#p1-display").append("<br><button id='p1Rock'>Rock</button> <button id='p1Paper'>Paper</button> <button id='p1Scissors'>Scissors</button>");
+
     }
     else if(!player2Selected){
         p2.name = $("#name-input").val().trim();
         console.log(p2);
         database.ref().set({
+            round: round,
             p1: p1,
             p2: p2,
             player1Selected : true,
             player2Selected : true,
         });
         
-        $("#p2-display").text(p2.name + "You are Player 2")
-
+        $("#p2-display").text("Welcome " + p2.name + "! You are Player 2. Click any of the below buttons to make your first choice")
+        $("#p2-display").append("<br><button id='p2Rock'>Rock</button> <button id='p2Paper'>Paper</button> <button id='p2Scissors'>Scissors</button>");
     }
     else{
         $("#display").text("Sorry, the game is full.")
