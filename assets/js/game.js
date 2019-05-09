@@ -84,60 +84,74 @@ database.ref().set({
 
 });
 
+
+
+
 $("#display").on("click", ".gameButton", function(){
-    if(this.value === p1 && !player1ChoiceSelected){
-        p1.choice = this.id;
-        console.log(this.id);
-        database.ref().set({
-            round: round,
-             p1: p1,
-             p2: p2,
-             player1Selected : true,
-             player2Selected : true,
-             player1ChoiceSelected : true,
-             player2ChoiceSelected : false
-          });
-    
-          $("#display").text("You chose " + p1.choice);
-    }
-    else if(this.value === p2 && !player2ChoiceSelected){
-        p2.choice = this.id;
-        console.log(this.id);
-        database.ref().set({
-            round: round,
-             p1: p1,
-             p2: p2,
-             player1Selected : true,
-             player2Selected : true,
-             player1ChoiceSelected : true,
-             player2ChoiceSelected : true
-          });
-          $("#display").text("You chose " + p2.choice);
-    }
+    console.log(this.value);
+    console.log(player1ChoiceSelected)
+    console.log(player2ChoiceSelected)
 
-
+    if (player2Selected){ 
+        if(this.value === "p1" && !player1ChoiceSelected){
+            p1.choice = this.id;
+            console.log(this.id);
+            database.ref().set({
+                round: round,
+                p1: p1,
+                p2: p2,
+                player1Selected : true,
+                player2Selected : true,
+                player1ChoiceSelected : true,
+                player2ChoiceSelected : false
+            });
+        
+            $("#display").append("<br>You chose " + p1.choice);
+        }
+        else if(this.value === "p2" && !player2ChoiceSelected){
+            p2.choice = this.id;
+            console.log(this.id);
+            database.ref().set({
+                round: round,
+                p1: p1,
+                p2: p2,
+                player1Selected : true,
+                player2Selected : true,
+                player1ChoiceSelected : true,
+                player2ChoiceSelected : true
+            });
+            $("#display").append("<br>You chose " + p2.choice);
+        }
+    }
 })
 
 
 
 
-
-
-
-
-
-
 database.ref().on("value", function(snapshot) {
-p1.name = snapshot.val().p1.name;
-p2.name = snapshot.val().p2.name;
-player1Selected = snapshot.val().player1Selected;
-player2Selected = snapshot.val().player2Selected;
+    p1 = snapshot.val().p1;
+    p2 = snapshot.val().p2;
+    player1Selected = snapshot.val().player1Selected;
+    player2Selected = snapshot.val().player2Selected;
+    player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
+    player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
+    
+    console.log(p1.name + " player1 ");
+    console.log(p2.name + " player2 ");
+    }, function(errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
 
-console.log(p1.name + " player1 ");
-console.log(p2.name + " player2 ");
-}, function(errorObject) {
-    console.log("The read failed: " + errorObject.code);
-});
+
+
+
+
+
+
+
+
+
+
 
 
 
