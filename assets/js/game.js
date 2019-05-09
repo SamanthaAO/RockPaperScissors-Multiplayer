@@ -37,7 +37,24 @@ var p2 = {
 };
 
 
+function game(){
 
+    if(p1.choice===p2.choice){
+        $("#display").append("Tie")
+    }
+    else if(p1.choice === "rock" && p2.choice === "scissors"){
+        $("#display").append("P1 wins")
+    }
+    else if(p1.choice === "paper" && p2.choice === "rock"){
+        $("#display").append("P1 wins")
+    }
+    else if(p1.choice === "scissors"&& p2.choice === "paper"){
+        $("#display").append("P1 wins")
+    }
+    else{
+        $("#display").append("P2 wins")
+    }
+}
 
 
 $("#createPlayer").on("click", function(event){
@@ -121,6 +138,7 @@ $("#display").on("click", ".gameButton", function(){
                 player2ChoiceSelected : true
             });
             $("#display").append("<br>You chose " + p2.choice);
+            game();
         }
     }
 })
