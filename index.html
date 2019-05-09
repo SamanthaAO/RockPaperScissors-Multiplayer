@@ -33,15 +33,15 @@
         </div>
     </div>
 
-    <div class="container"></div>
+    <div class="container">
         <div class="row">
             <div class ="col-sm-12" id="display"></div>
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="chatContainer">
         <div class="row">
-            <div id="chatArea"></div>
+            <div id="chatArea" class="border"></div>
         </div>
 
         <div class="row">
@@ -50,10 +50,9 @@
                 <textarea class="form-control" rows="5" id="comment"></textarea>
             </div>
         </div>
-        <div class="row">
-            <button class="btn btn-primary" id="chat" type="submit">Send Message</button> 
-        </div>
+        
     </div>
+
 
     <!-- bootstrap for js -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -73,6 +72,10 @@
 <script src="https://www.gstatic.com/firebasejs/6.0.0/firebase-app.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/6.0.0/firebase-database.js"></script>
+
+<!-- Link to Moment.js should go here -->
+<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
   <!-- my js file -->
 <script src="assets/js/game.js"></script>
 </body>
