@@ -36,37 +36,55 @@ var p2 = {
 
 };
 
+//increates the round and resets the choice selected boolians
+function increaseRound(){
+    round ++; 
+    database.ref().set({
+        round: round,
+         p1: p1,
+         p2: p2,
+         player1Selected : true,
+         player2Selected : true,
+         player1ChoiceSelected : false,
+         player2ChoiceSelected : false
 
+      });
+}
+
+//compares choices made by players
 function game(){
 
-    if(p1.choice===p2.choice){
-        $("#display").append("Tie")
-    }
-    else if(p1.choice === "rock" && p2.choice === "scissors"){
-        $("#display").append("P1 wins")
-    }
-    else if(p1.choice === "paper" && p2.choice === "rock"){
-        $("#display").append("P1 wins")
-    }
-    else if(p1.choice === "scissors"&& p2.choice === "paper"){
-        $("#display").append("P1 wins")
-    }
-    else{
-        $("#display").append("P2 wins")
+    if(player1ChoiceSelected && player2ChoiceSelected){
+        
+        if(p1.choice===p2.choice){
+            $("#display").append("Tie");
+             increaseRound();
+        }
+        else if((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors"&& p2.choice === "paper")){ 
+            $("#display").append("<br> P1 wins! "+ p1.choice + " beats " + p2.choice)
+            increaseRound();
+        } 
+        else{
+            $("#display").append("<br>P2 wins! "+ p2.choice + " beats " + p1.choice);
+            increaseRound();
+        }
     }
 }
 
-
+//assigns player 1 and 2
 $("#createPlayer").on("click", function(event){
     event.preventDefault();
 
+//if no one is selected assign input name player 1 and add data to server
 if(!player1Selected && !player2Selected){
+
 p1.name = $("#name-input").val().trim();
-console.log(p1);
+
 database.ref().set({
         round: round,
          p1: p1,
          p2: p2,
+         //this is the change
          player1Selected : true,
          player2Selected : false,
          player1ChoiceSelected : false,
@@ -75,23 +93,29 @@ database.ref().set({
       });
       
       $("#display").text("Welcome " + p1.name + "! You are Player 1. Click any of the below buttons to make your first choice")
+      //add choice buttons
       $("#display").append("<br><button id='rock' value='p1' class='gameButton'>Rock</button> <button id='paper' value='p1' class='gameButton'>Paper</button> <button id='scissors' value='p1' class='gameButton'>Scissors</button>");
 
     }
+
+    //if p1 aleeady selected assing new player to p2
     else if(!player2Selected){
+
         p2.name = $("#name-input").val().trim();
-        console.log(p2);
+        
         database.ref().set({
             round: round,
             p1: p1,
             p2: p2,
             player1Selected : true,
+            //this is the change
             player2Selected : true,
             player1ChoiceSelected : false,
             player2ChoiceSelected : false
         });
         
         $("#display").text("Welcome " + p2.name + "! You are Player 2. Click any of the below buttons to make your first choice")
+        //add choice buttons
         $("#display").append("<br><button id='rock' value='p2' class='gameButton'>Rock</button> <button id='paper' value='p2' class='gameButton'>Paper</button> <button id='scissors' value='p2' class='gameButton'>Scissors</button>");
     }
     else{
@@ -103,38 +127,72 @@ database.ref().set({
 
 
 
-
+//choice buttons for game
 $("#display").on("click", ".gameButton", function(){
-    console.log(this.value);
-    console.log(player1ChoiceSelected)
-    console.log(player2ChoiceSelected)
-
+    //only can be clicked if both players assigned
     if (player2Selected){ 
-        if(this.value === "p1" && !player1ChoiceSelected){
+
+        if(this.value === "p1" && !player1ChoiceSelected && !player2ChoiceSelected){
+
             p1.choice = this.id;
-            console.log(this.id);
+            
             database.ref().set({
                 round: round,
                 p1: p1,
                 p2: p2,
                 player1Selected : true,
                 player2Selected : true,
+                //this is the change
                 player1ChoiceSelected : true,
                 player2ChoiceSelected : false
             });
         
             $("#display").append("<br>You chose " + p1.choice);
+            game();
         }
-        else if(this.value === "p2" && !player2ChoiceSelected){
-            p2.choice = this.id;
-            console.log(this.id);
+        else if(this.value === "p1" && player2ChoiceSelected && !player1ChoiceSelected){
+            p1.choice = this.id;
+            
             database.ref().set({
                 round: round,
                 p1: p1,
                 p2: p2,
                 player1Selected : true,
                 player2Selected : true,
+                //this is the change
                 player1ChoiceSelected : true,
+                player2ChoiceSelected : true
+            });
+            $("#display").append("<br>You chose " + p1.choice);
+            game();
+        }
+        else if(this.value === "p2" && !player2ChoiceSelected && player1ChoiceSelected){
+            p2.choice = this.id;
+            
+            database.ref().set({
+                round: round,
+                p1: p1,
+                p2: p2,
+                player1Selected : true,
+                player2Selected : true,
+                //this is the change
+                player1ChoiceSelected : true,
+                player2ChoiceSelected : true
+            });
+            $("#display").append("<br>You chose " + p2.choice);
+            game();
+        }
+        else if(this.value === "p2" && !player2ChoiceSelected && !player1ChoiceSelected){
+            p2.choice = this.id;
+            
+            database.ref().set({
+                round: round,
+                p1: p1,
+                p2: p2,
+                player1Selected : true,
+                player2Selected : true,
+                //this is the change
+                player1ChoiceSelected : false,
                 player2ChoiceSelected : true
             });
             $("#display").append("<br>You chose " + p2.choice);
@@ -153,9 +211,11 @@ database.ref().on("value", function(snapshot) {
     player2Selected = snapshot.val().player2Selected;
     player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
     player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
+    round = snapshot.val().round;
+    $("#roundCounter").html("Round: "+ round);
     
-    console.log(p1.name + " player1 ");
-    console.log(p2.name + " player2 ");
+    console.log("Round: "+ round);
+    
     }, function(errorObject) {
         console.log("The read failed: " + errorObject.code);
     });
