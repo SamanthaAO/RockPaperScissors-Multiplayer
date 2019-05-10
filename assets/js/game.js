@@ -15,6 +15,7 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 var chat = database.ref("/chat");
 
+
         
 
 //set up variables
@@ -42,44 +43,54 @@ var p2 = {
 var isP1 = false;
 var isP2 = false;
 
-// When first player submits name isP1 = true
-// When second player submits name isP2 = true
-
-// When first player leaves game (closes window, etc) - clear data in firebase for P1 (set P1 data to "")
-   // on unload event... if (P2) { set P2.name = "", P2.wins = ""} (submit to Firebase)
-
-// When second player leaves game (closes window, etc) - clear data in firebase for P2 (set P2 data to "")
-   // on unload event... if (P1) { set P1.name = "", P1.wins = ""} (submit to Firebase)
 
 
-   
+   $(window).on("beforeunload", function() {
+    if(isP1){
+        p1.name = "";
+        p1.wins = 0;
+        p1.loses = 0;
+        p1.choice = "";
 
-// // All of our connections will be stored in this directory.
-//         var connectionsRef = database.ref("/connections");
+        database.ref().set({
+            round: round,
+            p1: p1,
+            p2: p2,
+            player1Selected: false,
+            player2Selected: false,
+            player1ChoiceSelected: false,
+            player2ChoiceSelected: false,
+    
+        });
+        isP1 = false;
 
-//         // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
-//         var isConnected = database.ref(".info/connected");
+    }
+    else if(isP2){
+        p2.name = "";
+        p2.wins = 0;
+        p2.loses = 0;
+        p2.choice = "";
 
-//         // When the client's connection state changes...
-//         isConnected.on("value", function(snap) {
+        database.ref().set({
+            round: round,
+            p1: p1,
+            p2: p2,
+            player1Selected: false,
+            player2Selected: false,
+            player1ChoiceSelected: false,
+            player2ChoiceSelected: false,
+    
+        });
 
-//             // If they are connected..
-//             if (snap.val()) {
-        
-//             // Add user to the connections list.
-//             var con = connectionsRef.push(true);
-//             // Remove user from the connection list when they disconnect.
-//             con.onDisconnect().remove();
-//             }
-//         });
-        
-//         // When first loaded or when the connections list changes...
-//         connectionsRef.on("value", function(snap) {
-        
-//             // Display the viewer count in the html.
-//             // The number of online users is the number of children in the connections list.
-//             $("#chatArea").text(snap.numChildren());
-//         });
+        isP2 = false;
+    }
+      
+    });
+
+  
+
+
+
 
 //increates the round and resets the choice selected boolians
 function increaseRound() {
@@ -125,9 +136,11 @@ $("#createPlayer").on("click", function (event) {
     event.preventDefault();
 
     //if no one is selected assign input name player 1 and add data to server
-    if (!player1Selected && !player2Selected) {
+    if (!player1Selected) {
 
         p1.name = $("#name-input").val().trim();
+        isP1 = true;
+        console.log(isP1);
 
         database.ref().set({
             round: round,
@@ -149,10 +162,12 @@ $("#createPlayer").on("click", function (event) {
 
     }
 
-    //if p1 aleeady selected assing new player to p2
+    //if p1 aleeady selected assign new player to p2
     else if (!player2Selected) {
 
         p2.name = $("#name-input").val().trim();
+        isP2 = true;
+        console.log(isP2);
 
         database.ref().set({
             round: round,
@@ -303,6 +318,43 @@ chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childS
 });
 
 
+
+// When first player submits name isP1 = true
+// When second player submits name isP2 = true
+
+// When first player leaves game (closes window, etc) - clear data in firebase for P1 (set P1 data to "")
+   // on unload event... if (P2) { set P2.name = "", P2.wins = ""} (submit to Firebase)
+
+// When second player leaves game (closes window, etc) - clear data in firebase for P2 (set P2 data to "")
+   // on unload event... if (P1) { set P1.name = "", P1.wins = ""} (submit to Firebase)
+
+
+// // All of our connections will be stored in this directory.
+//         var connectionsRef = database.ref("/connections");
+
+//         // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
+//         var isConnected = database.ref(".info/connected");
+
+//         // When the client's connection state changes...
+//         isConnected.on("value", function(snap) {
+
+//             // If they are connected..
+//             if (snap.val()) {
+        
+//             // Add user to the connections list.
+//             var con = connectionsRef.push(true);
+//             // Remove user from the connection list when they disconnect.
+//             con.onDisconnect().remove();
+//             }
+//         });
+        
+//         // When first loaded or when the connections list changes...
+//         connectionsRef.on("value", function(snap) {
+        
+//             // Display the viewer count in the html.
+//             // The number of online users is the number of children in the connections list.
+//             $("#chatArea").text(snap.numChildren());
+//         });
 
 
 
