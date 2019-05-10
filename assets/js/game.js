@@ -46,6 +46,15 @@ var p2 = {
 var isP1 = false;
 var isP2 = false;
 
+var chatBox = `<div class="row">
+<div id="chatArea" class="border col-sm-6"></div>
+
+<div class="form-group col-sm-6"id="chatForm">
+    <label for="comment">Talk Smack Here!</label>
+    <textarea class="form-control" rows="5" id="comment"></textarea>
+</div>
+</div>`
+
 
 
    $(window).on("beforeunload", function() {
@@ -181,6 +190,9 @@ $("#login").on("click", "#createPlayer",function (event) {
         $("#display").text("Welcome " + p1.name + "! You are Player 1. Click any of the below buttons to make your first choice")
         //add choice buttons
         $("#display").append("<br><button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+       
+        $("#chatContainer").append(chatBox);
+       
         //create unique chat button
         $('#chatForm').append(`<button class='btn btn-outline-dark btn-light p-2 float-right mt-2' id='chat' value='${p1.name}' type='submit'>Send Message</button>`)
 
@@ -205,7 +217,8 @@ $("#login").on("click", "#createPlayer",function (event) {
         //add choice buttons
         $("#display").append("<br><button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
         //create unique chat button
-        $('#chatForm').append(`<button class='btn btn-outline-dark btn-light float-right mt-2' id='chat' value='${p2.name}' type='submit'>Send Message</button>`)
+        $("#chatContainer").append(chatBox);
+        $('#chatForm').append(`<button class='btn btn-outline-dark btn-light float-right mt-2' id='chat' value='${p2.name}' type='submit'>Send Message</button>`);
     }
     else {
         $("#login").empty();
@@ -311,46 +324,6 @@ chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childS
     console.log("The read failed: " + errorObject.code);
 
 });
-
-
-
-// When first player submits name isP1 = true
-// When second player submits name isP2 = true
-
-// When first player leaves game (closes window, etc) - clear data in firebase for P1 (set P1 data to "")
-   // on unload event... if (P2) { set P2.name = "", P2.wins = ""} (submit to Firebase)
-
-// When second player leaves game (closes window, etc) - clear data in firebase for P2 (set P2 data to "")
-   // on unload event... if (P1) { set P1.name = "", P1.wins = ""} (submit to Firebase)
-
-
-// // All of our connections will be stored in this directory.
-//         var connectionsRef = database.ref("/connections");
-
-//         // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
-//         var isConnected = database.ref(".info/connected");
-
-//         // When the client's connection state changes...
-//         isConnected.on("value", function(snap) {
-
-//             // If they are connected..
-//             if (snap.val()) {
-        
-//             // Add user to the connections list.
-//             var con = connectionsRef.push(true);
-//             // Remove user from the connection list when they disconnect.
-//             con.onDisconnect().remove();
-//             }
-//         });
-        
-//         // When first loaded or when the connections list changes...
-//         connectionsRef.on("value", function(snap) {
-        
-//             // Display the viewer count in the html.
-//             // The number of online users is the number of children in the connections list.
-//             $("#chatArea").text(snap.numChildren());
-//         });
-
 
 
 

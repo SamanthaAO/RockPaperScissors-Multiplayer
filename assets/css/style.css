@@ -18,3 +18,7 @@
   #roundCounter, #nameForm, #chatForm {
       margin: auto;
   }
+
+  /* #chatArea {
+      overflow: auto;
+  } */
