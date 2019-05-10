@@ -17,7 +17,6 @@ var chat = database.ref("/chat");
 var player1 = database.ref("/player1");
 var player2 = database.ref("/player2");
 var roundRef = database.ref("/roundRef");
-var game = database.ref("/game");
 
 
 
@@ -77,6 +76,7 @@ $(window).on("beforeunload", function () {
         player1.set({
             p1: p1,
             player1Selected: false,
+            player1ChoiceSelected: false,
         });
 
         round = 1;
@@ -97,6 +97,7 @@ $(window).on("beforeunload", function () {
         player2.set({
             p2: p2,
             player2Selected: false,
+            player2ChoiceSelected: false,
 
         });
 
@@ -148,17 +149,49 @@ function increaseRound() {
     });
 }
 
+//display botth playerrs images
+function displayAll(){
+
+    if(isP1){
+        $("#displayP2").empty();
+        if (p2.choice === "rock") {
+            $("#displayP2").append(rockImage);
+        }
+        else if (p2.choice === "paper") {
+            $("#displayP2").append(paperImage);
+        }
+        else {
+            $("#displayP2").append(scissorImage);
+        } 
+    }
+    else if(isP2){
+        $("#displayP1").empty();
+        if (p1.choice === "rock") {
+            $("#displayP1").append(rockImage);
+        }
+        else if (p1.choice === "paper") {
+            $("#displayP1").append(paperImage);
+        }
+        else {
+            $("#displayP1").append(scissorImage);
+        }
+
+    }
+}
 //compares choices made by players
 function game() {
 
     if (player1ChoiceSelected && player2ChoiceSelected) {
 
         if (p1.choice === p2.choice) {
-            $("#displayP1").append(" <br> Tie");
-            $("#displayP2").append(" <br> Tie");
+            displayAll();
             increaseRound();
         }
+
         else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
+            
+            displayAll();
+
             $("#displayP1").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
             $("#displayP2").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
             p1.wins++;
@@ -166,6 +199,9 @@ function game() {
             increaseRound();
         }
         else {
+
+            displayAll();
+
             $("#displayP1").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
             $("#displayP2").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
             p2.wins++;
@@ -257,10 +293,8 @@ $("#display").on("click", ".gameButton", function () {
             player1.set({
                 p1: p1,
                 player1Selected: true,
-            });
-            game.set({
                 player1ChoiceSelected: true,
-            })
+            });
 
             //displays image for choice
             $("#displayP1").empty();
@@ -282,11 +316,8 @@ $("#display").on("click", ".gameButton", function () {
             player2.set({
                 p2: p2,
                 player2Selected: true,
+                player2ChoiceSelected: true,
             });
-
-            game.set({
-                player1ChoiceSelected: true,
-            })
 
             //displays image for choice
             $("#displayP2").empty();
@@ -300,8 +331,7 @@ $("#display").on("click", ".gameButton", function () {
                 $("#displayP2").append(scissorImage);
             } 
         }
-    //runs game
-    game();
+    
     }
 })
 
@@ -325,10 +355,13 @@ $("#chatContainer").on("click", "#chat", function (event) {
 player1.on("value", function (snapshot) {
     p1 = snapshot.val().p1;
     player1Selected = snapshot.val().player1Selected;
+    player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
     //displays name
     $("#nameP1").text(p1.name);
     //displays score
     $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + "<strong>Loses: </strong>" + p1.loses);
+    //runs game
+    game();
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
@@ -338,21 +371,15 @@ player1.on("value", function (snapshot) {
 player2.on("value", function (snapshot) {
     p2 = snapshot.val().p2;
     player2Selected = snapshot.val().player2Selected;
-    
+    player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
     //displays name
     $("#nameP2").html(p2.name);
     //displays score
     $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
+    //runs game
+    game();
 
 
-}, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-});
-
-player2.on("value", function (snapshot) {
-    player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
-    player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
-    
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
