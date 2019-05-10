@@ -1,0 +1,20 @@
+.jumbotron {
+    background-color: white;
+  }
+
+  img {
+      margin:auto;
+  }
+
+  body {
+      background-color: lightblue;
+      /* font-family: 'Montserrat', sans-serif; */
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+  }
+
+  #roundCounter, #nameForm, #chatForm {
+      margin: auto;
+  }

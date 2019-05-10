@@ -14,6 +14,9 @@ firebase.initializeApp(firebaseConfig);
 // Create a variable to reference the database.
 var database = firebase.database();
 var chat = database.ref("/chat");
+var player1 = database.ref("/player1");
+var player2 = database.ref("/player2");
+var roundRef = database.ref("/roundRef");
 
 
         
@@ -23,7 +26,7 @@ var player1Selected = false;
 var player2Selected = false;
 var player1ChoiceSelected = false;
 var player2ChoiceSelected = false;
-var round = 0;
+var round = 1;
 var p1 = {
     name: "",
     wins: 0,
@@ -52,16 +55,18 @@ var isP2 = false;
         p1.loses = 0;
         p1.choice = "";
 
-        database.ref().set({
-            round: round,
+        player1.set({
             p1: p1,
-            p2: p2,
             player1Selected: false,
-            player2Selected: false,
             player1ChoiceSelected: false,
-            player2ChoiceSelected: false,
-    
         });
+
+        round = 1;
+
+        roundRef.set({
+            round: round,
+        });
+
         isP1 = false;
 
     }
@@ -71,15 +76,17 @@ var isP2 = false;
         p2.loses = 0;
         p2.choice = "";
 
-        database.ref().set({
-            round: round,
-            p1: p1,
+        player2.set({
             p2: p2,
-            player1Selected: false,
             player2Selected: false,
-            player1ChoiceSelected: false,
             player2ChoiceSelected: false,
     
+        });
+
+        round = 1;
+
+        roundRef.set({
+            round: round,
         });
 
         isP2 = false;
@@ -87,23 +94,43 @@ var isP2 = false;
       
     });
 
+    $( document ).ready(function(){ 
+
+    var login = `<form role="form" class="col-sm-6" id="nameForm">
+    <div class="form-group">
+        <label for="name-input">Name:</label>
+        <input class="form-control" id="name-input" type="text">
+
+    </div>
+    <button class="btn btn-outline-dark btn-light" id="createPlayer" type="submit">Submit</button>
+</form>`
+
+$("#login").append(login);
+
+    });
   
 
 
 
 
-//increates the round and resets the choice selected boolians
+//increases the round and resets the choice selected boolians
 function increaseRound() {
     round++;
-    database.ref().set({
+    console.log(round);
+    roundRef.set({
         round: round,
-        p1: p1,
-        p2: p2,
-        player1Selected: true,
-        player2Selected: true,
-        player1ChoiceSelected: false,
-        player2ChoiceSelected: false,
+    });
 
+    player1.set({
+        p1: p1,
+        player1Selected: true,
+        player1ChoiceSelected: false,
+    });
+
+    player2.set({
+        p2: p2,
+        player2Selected: true,
+        player2ChoiceSelected: false,
     });
 }
 
@@ -132,7 +159,7 @@ function game() {
 }
 
 //assigns player 1 and 2
-$("#createPlayer").on("click", function (event) {
+$("#login").on("click", "#createPlayer",function (event) {
     event.preventDefault();
 
     //if no one is selected assign input name player 1 and add data to server
@@ -142,23 +169,20 @@ $("#createPlayer").on("click", function (event) {
         isP1 = true;
         console.log(isP1);
 
-        database.ref().set({
-            round: round,
+        player1.set({
             p1: p1,
-            p2: p2,
-            //this is the change
             player1Selected: true,
-            player2Selected: false,
             player1ChoiceSelected: false,
-            player2ChoiceSelected: false,
 
         });
 
+        $("#login").empty();
+
         $("#display").text("Welcome " + p1.name + "! You are Player 1. Click any of the below buttons to make your first choice")
         //add choice buttons
-        $("#display").append("<br><button id='rock' value='p1' class='gameButton'>Rock</button> <button id='paper' value='p1' class='gameButton'>Paper</button> <button id='scissors' value='p1' class='gameButton'>Scissors</button>");
+        $("#display").append("<br><button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
         //create unique chat button
-        $('#chatContainer').append(`<div class='row'> <button class='btn btn-primary' id='chat' value='${p1.name}' type='submit'>Send Message</button></div>`)
+        $('#chatForm').append(`<button class='btn btn-outline-dark btn-light p-2 float-right mt-2' id='chat' value='${p1.name}' type='submit'>Send Message</button>`)
 
     }
 
@@ -169,25 +193,24 @@ $("#createPlayer").on("click", function (event) {
         isP2 = true;
         console.log(isP2);
 
-        database.ref().set({
-            round: round,
-            p1: p1,
+        player2.set({
             p2: p2,
-            player1Selected: true,
-            //this is the change
             player2Selected: true,
-            player1ChoiceSelected: false,
             player2ChoiceSelected: false,
         });
 
+        $("#login").empty();
+
         $("#display").text("Welcome " + p2.name + "! You are Player 2. Click any of the below buttons to make your first choice")
         //add choice buttons
-        $("#display").append("<br><button id='rock' value='p2' class='gameButton'>Rock</button> <button id='paper' value='p2' class='gameButton'>Paper</button> <button id='scissors' value='p2' class='gameButton'>Scissors</button>");
+        $("#display").append("<br><button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
         //create unique chat button
-        $('#chatContainer').append(`<div class='row'> <button class='btn btn-primary' id='chat' value='${p2.name}' type='submit'>Send Message</button></div>`)
+        $('#chatForm').append(`<button class='btn btn-outline-dark btn-light float-right mt-2' id='chat' value='${p2.name}' type='submit'>Send Message</button>`)
     }
     else {
+        $("#login").empty();
         $("#display").text("Sorry, the game is full.")
+
 
     }
 
@@ -200,73 +223,32 @@ $("#display").on("click", ".gameButton", function () {
     //only can be clicked if both players assigned
     if (player2Selected) {
 
-        if (this.value === "p1" && !player1ChoiceSelected && !player2ChoiceSelected) {
+        if (this.value === "p1" && !player1ChoiceSelected) {
 
             p1.choice = this.id;
 
-            database.ref().set({
-                round: round,
+            player1.set({
                 p1: p1,
-                p2: p2,
                 player1Selected: true,
-                player2Selected: true,
-                //this is the change
                 player1ChoiceSelected: true,
-                player2ChoiceSelected: false,
             });
 
             $("#display").append("<br>You chose " + p1.choice);
             game();
         }
-        else if (this.value === "p1" && player2ChoiceSelected && !player1ChoiceSelected) {
-            p1.choice = this.id;
 
-            database.ref().set({
-                round: round,
-                p1: p1,
-                p2: p2,
-                player1Selected: true,
-                player2Selected: true,
-                //this is the change
-                player1ChoiceSelected: true,
-                player2ChoiceSelected: true,
-            });
-            $("#display").append("<br>You chose " + p1.choice);
-            game();
-        }
-        else if (this.value === "p2" && !player2ChoiceSelected && player1ChoiceSelected) {
+        else if (this.value === "p2" && !player2ChoiceSelected) {
             p2.choice = this.id;
 
-            database.ref().set({
-                round: round,
-                p1: p1,
+            player2.set({
                 p2: p2,
-                player1Selected: true,
                 player2Selected: true,
-                //this is the change
-                player1ChoiceSelected: true,
-                player2ChoiceSelected: true,
-                commentList: commentList
-            });
-            $("#display").append("<br>You chose " + p2.choice);
-            game();
-        }
-        else if (this.value === "p2" && !player2ChoiceSelected && !player1ChoiceSelected) {
-            p2.choice = this.id;
-
-            database.ref().set({
-                round: round,
-                p1: p1,
-                p2: p2,
-                player1Selected: true,
-                player2Selected: true,
-                //this is the change
-                player1ChoiceSelected: false,
                 player2ChoiceSelected: true,
             });
             $("#display").append("<br>You chose " + p2.choice);
             game();
         }
+
     }
 })
 
@@ -286,15 +268,28 @@ $("#chatContainer").on("click", "#chat", function (event) {
 
 
 
-database.ref().on("value", function (snapshot) {
+player1.on("value", function (snapshot) {
     p1 = snapshot.val().p1;
-    p2 = snapshot.val().p2;
     player1Selected = snapshot.val().player1Selected;
-    player2Selected = snapshot.val().player2Selected;
     player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
+
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
+player2.on("value", function (snapshot) {
+    p2 = snapshot.val().p2;
+    player2Selected = snapshot.val().player2Selected;
     player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
+    
+
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
+roundRef.on("value", function (snapshot) {
     round = snapshot.val().round;
-    $("#roundCounter").html("Round: " + round);
+    $("#roundCounter").html("<strong>Round: </strong>" + round);
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
