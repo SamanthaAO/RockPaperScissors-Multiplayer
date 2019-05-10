@@ -15,32 +15,7 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 var chat = database.ref("/chat");
 
-        // // All of our connections will be stored in this directory.
-        // var connectionsRef = database.ref("/connections");
-
-        // // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
-        // var isConnected = database.ref(".info/connected");
-
-        // // When the client's connection state changes...
-        // isConnected.on("value", function(snap) {
-
-        //     // If they are connected..
-        //     if (snap.val()) {
         
-        //     // Add user to the connections list.
-        //     var con = connectionsRef.push(true);
-        //     // Remove user from the connection list when they disconnect.
-        //     con.onDisconnect().remove();
-        //     }
-        // });
-        
-        // // When first loaded or when the connections list changes...
-        // connectionsRef.on("value", function(snap) {
-        
-        //     // Display the viewer count in the html.
-        //     // The number of online users is the number of children in the connections list.
-        //     $("#chatArea").text(snap.numChildren());
-        // });
 
 //set up variables
 var player1Selected = false;
@@ -64,7 +39,32 @@ var p2 = {
 
 };
 
+// All of our connections will be stored in this directory.
+        var connectionsRef = database.ref("/connections");
 
+        // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
+        var isConnected = database.ref(".info/connected");
+
+        // When the client's connection state changes...
+        isConnected.on("value", function(snap) {
+
+            // If they are connected..
+            if (snap.val()) {
+        
+            // Add user to the connections list.
+            var con = connectionsRef.push(true);
+            // Remove user from the connection list when they disconnect.
+            con.onDisconnect().remove();
+            }
+        });
+        
+        // When first loaded or when the connections list changes...
+        connectionsRef.on("value", function(snap) {
+        
+            // Display the viewer count in the html.
+            // The number of online users is the number of children in the connections list.
+            $("#chatArea").text(snap.numChildren());
+        });
 
 //increates the round and resets the choice selected boolians
 function increaseRound() {
