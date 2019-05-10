@@ -17,9 +17,10 @@ var chat = database.ref("/chat");
 var player1 = database.ref("/player1");
 var player2 = database.ref("/player2");
 var roundRef = database.ref("/roundRef");
+var game = database.ref("/game");
 
 
-        
+
 
 //set up variables
 var player1Selected = false;
@@ -65,9 +66,9 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
 
 
 
-
-   $(window).on("beforeunload", function() {
-    if(isP1){
+//signs players off when screen closed and resets their stats so that they can be replaced by next person to enter
+$(window).on("beforeunload", function () {
+    if (isP1) {
         p1.name = "";
         p1.wins = 0;
         p1.loses = 0;
@@ -76,7 +77,6 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
         player1.set({
             p1: p1,
             player1Selected: false,
-            player1ChoiceSelected: false,
         });
 
         round = 1;
@@ -88,7 +88,7 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
         isP1 = false;
 
     }
-    else if(isP2){
+    else if (isP2) {
         p2.name = "";
         p2.wins = 0;
         p2.loses = 0;
@@ -97,8 +97,7 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
         player2.set({
             p2: p2,
             player2Selected: false,
-            player2ChoiceSelected: false,
-    
+
         });
 
         round = 1;
@@ -109,10 +108,11 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
 
         isP2 = false;
     }
-      
-    });
 
-    $( document ).ready(function(){ 
+});
+
+//create login when doc loads
+$(document).ready(function () {
 
     var login = `<form role="form" class="col-sm-6" id="nameForm">
     <div class="form-group">
@@ -123,13 +123,9 @@ var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
     <button class="btn btn-outline-dark btn-light" id="createPlayer" type="submit">Submit</button>
 </form>`
 
-$("#login").append(login);
+    $("#login").append(login);
 
-    });
-  
-
-
-
+});
 
 //increases the round and resets the choice selected boolians
 function increaseRound() {
@@ -177,10 +173,12 @@ function game() {
             increaseRound();
         }
     }
+
+
 }
 
 //assigns player 1 and 2
-$("#login").on("click", "#createPlayer",function (event) {
+$("#login").on("click", "#createPlayer", function (event) {
     event.preventDefault();
 
     //if no one is selected assign input name player 1 and add data to server
@@ -198,13 +196,15 @@ $("#login").on("click", "#createPlayer",function (event) {
         });
 
         $("#login").empty();
+        $("#loginInfo").empty();
 
         $("#greeting").text("Welcome " + p1.name + "! You are Player 1.")
         //add choice buttons
-        $("#buttonsP1").append("Click any of the below buttons to make your first choice <br> <button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
-       
+        $("#buttonsP1").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+
+        //create chat container
         $("#chatContainer").append(chatBox);
-       
+
         //create unique chat button
         $('#chatForm').append(`<button class='btn btn-outline-dark btn-light p-2 float-right mt-2' id='chat' value='${p1.name}' type='submit'>Send Message</button>`)
 
@@ -224,10 +224,11 @@ $("#login").on("click", "#createPlayer",function (event) {
         });
 
         $("#login").empty();
+        $("#loginInfo").empty();
 
         $("#greeting").text("Welcome " + p2.name + "! You are Player 2.")
         //add choice buttons
-        $("#buttonsP2").append("Click any of the below buttons to make your first choice <br> <button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+        $("#buttonsP2").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
         //create unique chat button
         $("#chatContainer").append(chatBox);
         $('#chatForm').append(`<button class='btn btn-outline-dark btn-light float-right mt-2' id='chat' value='${p2.name}' type='submit'>Send Message</button>`);
@@ -246,8 +247,9 @@ $("#login").on("click", "#createPlayer",function (event) {
 //choice buttons for game
 $("#display").on("click", ".gameButton", function () {
     //only can be clicked if both players assigned
-    if (player2Selected) {
+    if (player2Selected && player1Selected) {
 
+        //sets choice for p1
         if (this.value === "p1" && !player1ChoiceSelected) {
 
             p1.choice = this.id;
@@ -255,49 +257,55 @@ $("#display").on("click", ".gameButton", function () {
             player1.set({
                 p1: p1,
                 player1Selected: true,
-                player1ChoiceSelected: true,
             });
+            game.set({
+                player1ChoiceSelected: true,
+            })
 
+            //displays image for choice
             $("#displayP1").empty();
-            if(p1.choice === "rock"){
+            if (p1.choice === "rock") {
                 $("#displayP1").append(rockImage);
             }
-            else if(p1.choice === "paper"){
+            else if (p1.choice === "paper") {
                 $("#displayP1").append(paperImage);
             }
-            else{
+            else {
                 $("#displayP1").append(scissorImage);
             }
-            
-            game();
         }
 
+        //sets choice for p1
         else if (this.value === "p2" && !player2ChoiceSelected) {
             p2.choice = this.id;
 
             player2.set({
                 p2: p2,
                 player2Selected: true,
-                player2ChoiceSelected: true,
             });
 
+            game.set({
+                player1ChoiceSelected: true,
+            })
+
+            //displays image for choice
             $("#displayP2").empty();
-            if(p2.choice === "rock"){
+            if (p2.choice === "rock") {
                 $("#displayP2").append(rockImage);
             }
-            else if(p2.choice === "paper"){
+            else if (p2.choice === "paper") {
                 $("#displayP2").append(paperImage);
             }
-            else{
+            else {
                 $("#displayP2").append(scissorImage);
-            }
-
-            game();
+            } 
         }
-
+    //runs game
+    game();
     }
 })
 
+//submits text written in chat
 $("#chatContainer").on("click", "#chat", function (event) {
     event.preventDefault();
 
@@ -313,30 +321,43 @@ $("#chatContainer").on("click", "#chat", function (event) {
 
 
 
-
+//retrieves p1 values from database
 player1.on("value", function (snapshot) {
     p1 = snapshot.val().p1;
     player1Selected = snapshot.val().player1Selected;
-    player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
+    //displays name
     $("#nameP1").text(p1.name);
+    //displays score
     $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + "<strong>Loses: </strong>" + p1.loses);
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
+//retrieves p2 values from database
 player2.on("value", function (snapshot) {
     p2 = snapshot.val().p2;
     player2Selected = snapshot.val().player2Selected;
-    player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
-    $("#nameP2").html(p2.name);
-    $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
     
+    //displays name
+    $("#nameP2").html(p2.name);
+    //displays score
+    $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
+
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 });
 
+player2.on("value", function (snapshot) {
+    player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
+    player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
+    
+}, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
+//retrieves rounds from database
 roundRef.on("value", function (snapshot) {
     round = snapshot.val().round;
     $("#roundCounter").html("<strong>Round: </strong>" + round);
@@ -345,6 +366,7 @@ roundRef.on("value", function (snapshot) {
     console.log("The read failed: " + errorObject.code);
 });
 
+//displays chat items
 chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childSnapshot) {
     var sv = childSnapshot.val();
 
