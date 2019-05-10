@@ -46,6 +46,8 @@ var p2 = {
 var isP1 = false;
 var isP2 = false;
 
+
+//inserts
 var chatBox = `<div class="row">
 <div id="chatArea" class="border col-sm-6"></div>
 
@@ -53,7 +55,14 @@ var chatBox = `<div class="row">
     <label for="comment">Talk Smack Here!</label>
     <textarea class="form-control" rows="5" id="comment"></textarea>
 </div>
-</div>`
+</div>`;
+
+var rockImage = "<img src='assets/images/rock.png' width = '100px' >";
+var paperImage = "<img src='assets/images/paper.png' width = '100px'>";
+var scissorImage = "<img src='assets/images/scissors.png' width = '100px'>";
+var correctImage = "<img src='assets/images/correct.png' width = '50px'>";
+var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
+
 
 
 
@@ -149,17 +158,20 @@ function game() {
     if (player1ChoiceSelected && player2ChoiceSelected) {
 
         if (p1.choice === p2.choice) {
-            $("#display").append("Tie");
+            $("#displayP1").append(" <br> Tie");
+            $("#displayP2").append(" <br> Tie");
             increaseRound();
         }
         else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
-            $("#display").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice)
+            $("#displayP1").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
+            $("#displayP2").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
             p1.wins++;
             p2.loses++;
             increaseRound();
         }
         else {
-            $("#display").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
+            $("#displayP1").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
+            $("#displayP2").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
             p2.wins++;
             p1.loses++;
             increaseRound();
@@ -187,9 +199,9 @@ $("#login").on("click", "#createPlayer",function (event) {
 
         $("#login").empty();
 
-        $("#display").text("Welcome " + p1.name + "! You are Player 1. Click any of the below buttons to make your first choice")
+        $("#greeting").text("Welcome " + p1.name + "! You are Player 1.")
         //add choice buttons
-        $("#display").append("<br><button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+        $("#buttonsP1").append("Click any of the below buttons to make your first choice <br> <button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
        
         $("#chatContainer").append(chatBox);
        
@@ -213,16 +225,16 @@ $("#login").on("click", "#createPlayer",function (event) {
 
         $("#login").empty();
 
-        $("#display").text("Welcome " + p2.name + "! You are Player 2. Click any of the below buttons to make your first choice")
+        $("#greeting").text("Welcome " + p2.name + "! You are Player 2.")
         //add choice buttons
-        $("#display").append("<br><button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+        $("#buttonsP2").append("Click any of the below buttons to make your first choice <br> <button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
         //create unique chat button
         $("#chatContainer").append(chatBox);
         $('#chatForm').append(`<button class='btn btn-outline-dark btn-light float-right mt-2' id='chat' value='${p2.name}' type='submit'>Send Message</button>`);
     }
     else {
         $("#login").empty();
-        $("#display").text("Sorry, the game is full.")
+        $("#greeting").text("Sorry, the game is full.")
 
 
     }
@@ -246,7 +258,17 @@ $("#display").on("click", ".gameButton", function () {
                 player1ChoiceSelected: true,
             });
 
-            $("#display").append("<br>You chose " + p1.choice);
+            $("#displayP1").empty();
+            if(p1.choice === "rock"){
+                $("#displayP1").append(rockImage);
+            }
+            else if(p1.choice === "paper"){
+                $("#displayP1").append(paperImage);
+            }
+            else{
+                $("#displayP1").append(scissorImage);
+            }
+            
             game();
         }
 
@@ -258,7 +280,18 @@ $("#display").on("click", ".gameButton", function () {
                 player2Selected: true,
                 player2ChoiceSelected: true,
             });
-            $("#display").append("<br>You chose " + p2.choice);
+
+            $("#displayP2").empty();
+            if(p2.choice === "rock"){
+                $("#displayP2").append(rockImage);
+            }
+            else if(p2.choice === "paper"){
+                $("#displayP2").append(paperImage);
+            }
+            else{
+                $("#displayP2").append(scissorImage);
+            }
+
             game();
         }
 
@@ -285,6 +318,8 @@ player1.on("value", function (snapshot) {
     p1 = snapshot.val().p1;
     player1Selected = snapshot.val().player1Selected;
     player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
+    $("#nameP1").text(p1.name);
+    $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + "<strong>Loses: </strong>" + p1.loses);
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
@@ -294,6 +329,8 @@ player2.on("value", function (snapshot) {
     p2 = snapshot.val().p2;
     player2Selected = snapshot.val().player2Selected;
     player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
+    $("#nameP2").html(p2.name);
+    $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
     
 
 }, function (errorObject) {

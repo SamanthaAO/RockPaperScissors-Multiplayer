@@ -15,9 +15,16 @@
     font-family: 'Playfair Display', serif;
   }
 
-  #roundCounter, #nameForm, #chatForm {
+  #roundCounter, #nameForm, #chatForm, #greeting {
       margin: auto;
   }
+
+  #nameP2, #nameP1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    text-decoration: underline;
+  }
+
 
   /* #chatArea {
       overflow: auto;
