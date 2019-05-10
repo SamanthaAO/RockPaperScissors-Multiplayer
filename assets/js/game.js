@@ -39,32 +39,47 @@ var p2 = {
 
 };
 
-// All of our connections will be stored in this directory.
-        var connectionsRef = database.ref("/connections");
+var isP1 = false;
+var isP2 = false;
 
-        // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
-        var isConnected = database.ref(".info/connected");
+// When first player submits name isP1 = true
+// When second player submits name isP2 = true
 
-        // When the client's connection state changes...
-        isConnected.on("value", function(snap) {
+// When first player leaves game (closes window, etc) - clear data in firebase for P1 (set P1 data to "")
+   // on unload event... if (P2) { set P2.name = "", P2.wins = ""} (submit to Firebase)
 
-            // If they are connected..
-            if (snap.val()) {
+// When second player leaves game (closes window, etc) - clear data in firebase for P2 (set P2 data to "")
+   // on unload event... if (P1) { set P1.name = "", P1.wins = ""} (submit to Firebase)
+
+
+   
+
+// // All of our connections will be stored in this directory.
+//         var connectionsRef = database.ref("/connections");
+
+//         // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
+//         var isConnected = database.ref(".info/connected");
+
+//         // When the client's connection state changes...
+//         isConnected.on("value", function(snap) {
+
+//             // If they are connected..
+//             if (snap.val()) {
         
-            // Add user to the connections list.
-            var con = connectionsRef.push(true);
-            // Remove user from the connection list when they disconnect.
-            con.onDisconnect().remove();
-            }
-        });
+//             // Add user to the connections list.
+//             var con = connectionsRef.push(true);
+//             // Remove user from the connection list when they disconnect.
+//             con.onDisconnect().remove();
+//             }
+//         });
         
-        // When first loaded or when the connections list changes...
-        connectionsRef.on("value", function(snap) {
+//         // When first loaded or when the connections list changes...
+//         connectionsRef.on("value", function(snap) {
         
-            // Display the viewer count in the html.
-            // The number of online users is the number of children in the connections list.
-            $("#chatArea").text(snap.numChildren());
-        });
+//             // Display the viewer count in the html.
+//             // The number of online users is the number of children in the connections list.
+//             $("#chatArea").text(snap.numChildren());
+//         });
 
 //increates the round and resets the choice selected boolians
 function increaseRound() {
