@@ -48,19 +48,24 @@ var isP2 = false;
 
 
 //inserts
-var chatBox = `<div class="row">
-<div id="chatArea" class="border col-sm-6"></div>
-
-<div class="form-group col-sm-6"id="chatForm">
-    <label for="comment">Talk Smack Here!</label>
-    <textarea class="form-control" rows="5" id="comment"></textarea>
+var chatBox = `
+<div class="row">
+<div id="chatTitle" class="col-sm-12">Talk Smack Here:</div>
+</div
+<div class="row">
+    <div id="chatArea" class="border col-sm-12"></div>
 </div>
+
+<div class="row">
+    <div class="form-group col-sm-12 mt-2" id="chatForm">
+        <textarea class="form-control" rows="3" id="comment"></textarea>
+    </div>
 </div>`;
 
 var rockImage = "<img src='assets/images/rock.png' width = '100px' >";
 var paperImage = "<img src='assets/images/paper.png' width = '100px'>";
 var scissorImage = "<img src='assets/images/scissors.png' width = '100px'>";
-var correctImage = "<img src='assets/images/correct.png' width = '50px'>";
+var correctImage = "<img src='assets/images/correct.jpg' width = '50px'>";
 var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
 
 
@@ -163,6 +168,8 @@ function displayAll(){
         else {
             $("#displayP2").append(scissorImage);
         } 
+        $("#displayP1").append(correctImage);
+        $("#displayP2").append(incorrectImage);
     }
     else if(isP2){
         $("#displayP1").empty();
@@ -176,6 +183,8 @@ function displayAll(){
             $("#displayP1").append(scissorImage);
         }
 
+        $("#displayP1").append(correctImage);
+        $("#displayP2").append(incorrectImage);
     }
 }
 //compares choices made by players
@@ -192,20 +201,20 @@ function game() {
             
             displayAll();
 
-            $("#displayP1").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
-            $("#displayP2").append("<br> P1 wins! " + p1.choice + " beats " + p2.choice);
+            
+            
             p1.wins++;
             p2.loses++;
+
             increaseRound();
         }
         else {
 
             displayAll();
 
-            $("#displayP1").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
-            $("#displayP2").append("<br>P2 wins! " + p2.choice + " beats " + p1.choice);
             p2.wins++;
             p1.loses++;
+
             increaseRound();
         }
     }
@@ -404,12 +413,21 @@ chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childS
     //could not get date to display properly
     var dateUTC = moment.utc(moment(chatDateAdded, "MM-DD-YYYY HH:mm:ss"));
 
+    
     $("#chatArea").append("<div><strong>" + chatName + " : </strong>" + chatComment + "</div>");
+    
+    //makes chat bar scrol to bottom
+    $("#chatArea").scrollTop($("#chatArea")[0].scrollHeight);
+      
+      
+    
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
 
 });
+
+
 
 
 

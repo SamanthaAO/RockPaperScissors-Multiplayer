@@ -26,6 +26,13 @@
   }
 
 
-  /* #chatArea {
+  #chatArea {
+      height: 250px;
       overflow: auto;
-  } */
+  }
+
+  #chatTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    
+  }
