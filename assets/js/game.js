@@ -400,7 +400,7 @@ player1.on("value", function (snapshot) {
     player1Selected = snapshot.val().player1Selected;
     player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
     //displays name
-    $("#nameP1").text(p1.name);
+    $("#nameP1").text("Player 1: " + p1.name);
     //displays score
     if (p1.name !== "") {
         $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + " <strong>Loses: </strong>" + p1.loses);
@@ -421,7 +421,7 @@ player2.on("value", function (snapshot) {
     player2Selected = snapshot.val().player2Selected;
     player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
     //displays name
-    $("#nameP2").html(p2.name);
+    $("#nameP2").html("Player 2: " + p2.name);
     //displays score
 
     if (p2.name !== "") {

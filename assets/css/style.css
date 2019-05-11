@@ -29,6 +29,7 @@
   #chatArea {
       height: 250px;
       overflow: auto;
+      
   }
 
   #chatTitle {
