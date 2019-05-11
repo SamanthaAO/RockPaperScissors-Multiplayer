@@ -208,8 +208,8 @@ function game() {
         if (p1.choice === p2.choice) {
             displayAll();
             increaseRound();
-            $("#displayP1").prepend("<br>" + tieImage);
-            $("#displayP2").prepend("<br>" + tieImage);
+            $("#displayP1").prepend("<br>" + tieImage + "<br><br>");
+            $("#displayP2").prepend("<br>" + tieImage + "<br><br>");
         }
 
         else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
