@@ -67,6 +67,7 @@ var paperImage = "<img src='assets/images/paper.png' width = '100px'>";
 var scissorImage = "<img src='assets/images/scissors.png' width = '100px'>";
 var correctImage = "<img src='assets/images/correct.jpg' width = '50px'>";
 var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
+var tieImage = "<img src='assets/images/tie.png' width = '50px'>"
 
 
 
@@ -89,6 +90,7 @@ $(window).on("beforeunload", function () {
         roundRef.set({
             round: round,
         });
+
 
         isP1 = false;
 
@@ -154,10 +156,23 @@ function increaseRound() {
     });
 }
 
-//display botth playerrs images
-function displayAll(){
+function nextRound() {
+    if (isP1) {
+        $("#displayP2").empty();
+        $("#displayP1").empty();
+        $("#buttonsP1").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+    }
+    if (isP2) {
+        $("#displayP1").empty();
+        $("#displayP2").empty();
+        $("#buttonsP2").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
+    }
+}
 
-    if(isP1){
+//display botth playerrs images
+function displayAll() {
+
+    if (isP1) {
         $("#displayP2").empty();
         if (p2.choice === "rock") {
             $("#displayP2").append(rockImage);
@@ -167,11 +182,10 @@ function displayAll(){
         }
         else {
             $("#displayP2").append(scissorImage);
-        } 
-        $("#displayP1").append(correctImage);
-        $("#displayP2").append(incorrectImage);
+        }
+        
     }
-    else if(isP2){
+    if (isP2) {
         $("#displayP1").empty();
         if (p1.choice === "rock") {
             $("#displayP1").append(rockImage);
@@ -183,8 +197,7 @@ function displayAll(){
             $("#displayP1").append(scissorImage);
         }
 
-        $("#displayP1").append(correctImage);
-        $("#displayP2").append(incorrectImage);
+        
     }
 }
 //compares choices made by players
@@ -195,16 +208,19 @@ function game() {
         if (p1.choice === p2.choice) {
             displayAll();
             increaseRound();
+            $("#displayP1").prepend("<br>" + tieImage);
+            $("#displayP2").prepend("<br>" + tieImage);
         }
 
         else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
-            
+
             displayAll();
 
-            
-            
             p1.wins++;
             p2.loses++;
+
+            $("#displayP1").prepend("<br>" + correctImage + "<br><br>");
+            $("#displayP2").prepend("<br>" + incorrectImage + "<br><br>");
 
             increaseRound();
         }
@@ -215,8 +231,14 @@ function game() {
             p2.wins++;
             p1.loses++;
 
+            $("#displayP2").prepend("<br>" + correctImage + "<br><br>");
+            $("#displayP1").prepend("<br>" + incorrectImage + "<br><br>");
+
             increaseRound();
         }
+
+        setTimeout(nextRound, 3000)
+
     }
 
 
@@ -239,6 +261,8 @@ $("#login").on("click", "#createPlayer", function (event) {
             player1ChoiceSelected: false,
 
         });
+
+        $(p1Area).addClass("border");
 
         $("#login").empty();
         $("#loginInfo").empty();
@@ -267,6 +291,8 @@ $("#login").on("click", "#createPlayer", function (event) {
             player2Selected: true,
             player2ChoiceSelected: false,
         });
+
+        $(p2Area).addClass("border");
 
         $("#login").empty();
         $("#loginInfo").empty();
@@ -298,6 +324,7 @@ $("#display").on("click", ".gameButton", function () {
         if (this.value === "p1" && !player1ChoiceSelected) {
 
             p1.choice = this.id;
+            $("#buttonsP1").empty();
 
             player1.set({
                 p1: p1,
@@ -306,7 +333,6 @@ $("#display").on("click", ".gameButton", function () {
             });
 
             //displays image for choice
-            $("#displayP1").empty();
             if (p1.choice === "rock") {
                 $("#displayP1").append(rockImage);
             }
@@ -316,11 +342,17 @@ $("#display").on("click", ".gameButton", function () {
             else {
                 $("#displayP1").append(scissorImage);
             }
+
+            if(!player2ChoiceSelected && player1ChoiceSelected){
+            $("#displayP2").append("<br>Still Deciding");
+            }
         }
 
         //sets choice for p1
         else if (this.value === "p2" && !player2ChoiceSelected) {
             p2.choice = this.id;
+            $("#buttonsP2").empty();
+
 
             player2.set({
                 p2: p2,
@@ -329,7 +361,6 @@ $("#display").on("click", ".gameButton", function () {
             });
 
             //displays image for choice
-            $("#displayP2").empty();
             if (p2.choice === "rock") {
                 $("#displayP2").append(rockImage);
             }
@@ -338,9 +369,11 @@ $("#display").on("click", ".gameButton", function () {
             }
             else {
                 $("#displayP2").append(scissorImage);
-            } 
+            }
         }
-    
+        if(!player1ChoiceSelected && player2ChoiceSelected){
+        $("#displayP1").append("<br>Still Deciding");
+        }
     }
 })
 
@@ -354,6 +387,7 @@ $("#chatContainer").on("click", "#chat", function (event) {
         dateAdded: firebase.database.ServerValue.TIMESTAMP,
         name: this.value
     })
+    $("#comment").val('');
 
 });
 
@@ -368,7 +402,12 @@ player1.on("value", function (snapshot) {
     //displays name
     $("#nameP1").text(p1.name);
     //displays score
-    $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + "<strong>Loses: </strong>" + p1.loses);
+    if (p1.name !== "") {
+        $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + " <strong>Loses: </strong>" + p1.loses);
+    }
+    else {
+        $("#scoreP1").empty();
+    }
     //runs game
     game();
 
@@ -384,7 +423,14 @@ player2.on("value", function (snapshot) {
     //displays name
     $("#nameP2").html(p2.name);
     //displays score
-    $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
+
+    if (p2.name !== "") {
+        $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
+    }
+    else {
+        $("#scoreP2").empty();
+    }
+
     //runs game
     game();
 
@@ -413,14 +459,15 @@ chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childS
     //could not get date to display properly
     var dateUTC = moment.utc(moment(chatDateAdded, "MM-DD-YYYY HH:mm:ss"));
 
-    
+
     $("#chatArea").append("<div><strong>" + chatName + " : </strong>" + chatComment + "</div>");
     
+
     //makes chat bar scrol to bottom
     $("#chatArea").scrollTop($("#chatArea")[0].scrollHeight);
-      
-      
-    
+
+
+
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
