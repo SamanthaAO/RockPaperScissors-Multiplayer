@@ -43,11 +43,17 @@ var p2 = {
 
 };
 
+// var p2Status = {
+//     player2Selected: false,
+//     player2ChoiceSelected: false,
+// }
+
+//sets which screen displays what becuae you only want to display certain thins to ther perrson that isP1 or is P2
 var isP1 = false;
 var isP2 = false;
 
 
-//inserts
+//chat box insert
 var chatBox = `
 <div class="row">
 <div id="chatTitle" class="col-sm-12">Talk Smack Here:</div>
@@ -62,9 +68,13 @@ var chatBox = `
     </div>
 </div>`;
 
+
+//choice images
 var rockImage = "<img src='assets/images/rock.png' width = '100px' >";
 var paperImage = "<img src='assets/images/paper.png' width = '100px'>";
 var scissorImage = "<img src='assets/images/scissors.png' width = '100px'>";
+
+//score images
 var correctImage = "<img src='assets/images/correct.jpg' width = '50px'>";
 var incorrectImage = "<img src='assets/images/wrong.png' width = '50px'>";
 var tieImage = "<img src='assets/images/tie.png' width = '50px'>"
@@ -73,6 +83,7 @@ var tieImage = "<img src='assets/images/tie.png' width = '50px'>"
 
 //signs players off when screen closed and resets their stats so that they can be replaced by next person to enter
 $(window).on("beforeunload", function () {
+    //signs playerr 1 off sets stats back to start and resets round
     if (isP1) {
         p1.name = "";
         p1.wins = 0;
@@ -91,10 +102,12 @@ $(window).on("beforeunload", function () {
             round: round,
         });
 
-
+        //there no longer is a P1 cuz they logged off
         isP1 = false;
 
     }
+
+    //signs player 2 off resets stats
     else if (isP2) {
         p2.name = "";
         p2.wins = 0;
@@ -156,20 +169,21 @@ function increaseRound() {
     });
 }
 
+//is called after timerrr runs out clears the images of what each player played last turn and gives them their buttons back
 function nextRound() {
+
+    $("#displayP2").empty();
+    $("#displayP1").empty();
+
     if (isP1) {
-        $("#displayP2").empty();
-        $("#displayP1").empty();
         $("#buttonsP1").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p1' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p1' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p1' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
     }
     if (isP2) {
-        $("#displayP1").empty();
-        $("#displayP2").empty();
         $("#buttonsP2").append("Click any of the below buttons to make your choice <br> <button id='rock' value='p2' class='gameButton btn btn-outline-dark btn-light'>Rock</button> <button id='paper' value='p2' class='gameButton btn btn-outline-dark btn-light'>Paper</button> <button id='scissors' value='p2' class='gameButton btn btn-outline-dark btn-light'>Scissors</button>");
     }
 }
 
-//display botth playerrs images
+//display both playerrs images once both have selected their choices
 function displayAll() {
 
     if (isP1) {
@@ -183,7 +197,7 @@ function displayAll() {
         else {
             $("#displayP2").append(scissorImage);
         }
-        
+
     }
     if (isP2) {
         $("#displayP1").empty();
@@ -197,47 +211,61 @@ function displayAll() {
             $("#displayP1").append(scissorImage);
         }
 
-        
+
     }
 }
 //compares choices made by players
 function game() {
 
+    //once both choices are selected
     if (player1ChoiceSelected && player2ChoiceSelected) {
 
-        if (p1.choice === p2.choice) {
-            displayAll();
-            increaseRound();
-            $("#displayP1").prepend("<br>" + tieImage + "<br><br>");
-            $("#displayP2").prepend("<br>" + tieImage + "<br><br>");
-        }
+            //tie
+            if (p1.choice === p2.choice) {
+                //displays all images
+                displayAll();
 
-        else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
+                //shows tie images
+                $("#displayP1").prepend("<br>" + tieImage + "<br><br>");
+                $("#displayP2").prepend("<br>" + tieImage + "<br><br>");
 
-            displayAll();
+                //next round
+                increaseRound();
+            }
+            //p1 wins
+            else if ((p1.choice === "rock" && p2.choice === "scissors") || (p1.choice === "paper" && p2.choice === "rock") || (p1.choice === "scissors" && p2.choice === "paper")) {
 
-            p1.wins++;
-            p2.loses++;
+                displayAll();
 
-            $("#displayP1").prepend("<br>" + correctImage + "<br><br>");
-            $("#displayP2").prepend("<br>" + incorrectImage + "<br><br>");
+                //increases wins and losses
+                p1.wins++;
+                p2.loses++;
 
-            increaseRound();
-        }
-        else {
+                //shows win and loss images
+                $("#displayP1").prepend("<br>" + correctImage + "<br><br>");
+                $("#displayP2").prepend("<br>" + incorrectImage + "<br><br>");
 
-            displayAll();
+                increaseRound();
+            }
+            
+            //p2 wins
+            else {
 
-            p2.wins++;
-            p1.loses++;
+                displayAll();
 
-            $("#displayP2").prepend("<br>" + correctImage + "<br><br>");
-            $("#displayP1").prepend("<br>" + incorrectImage + "<br><br>");
+                p2.wins++;
+                p1.loses++;
 
-            increaseRound();
-        }
+                $("#displayP2").prepend("<br>" + correctImage + "<br><br>");
+                $("#displayP1").prepend("<br>" + incorrectImage + "<br><br>");
 
-        setTimeout(nextRound, 3000)
+                increaseRound();
+            }
+
+
+            //sets time out for images being displayed and the start next round
+            setTimeout(nextRound, 3000)
+        
 
     }
 
@@ -253,7 +281,6 @@ $("#login").on("click", "#createPlayer", function (event) {
 
         p1.name = $("#name-input").val().trim();
         isP1 = true;
-        console.log(isP1);
 
         player1.set({
             p1: p1,
@@ -262,6 +289,7 @@ $("#login").on("click", "#createPlayer", function (event) {
 
         });
 
+        //adds border to area for that player
         $(p1Area).addClass("border");
 
         $("#login").empty();
@@ -284,7 +312,6 @@ $("#login").on("click", "#createPlayer", function (event) {
 
         p2.name = $("#name-input").val().trim();
         isP2 = true;
-        console.log(isP2);
 
         player2.set({
             p2: p2,
@@ -292,6 +319,7 @@ $("#login").on("click", "#createPlayer", function (event) {
             player2ChoiceSelected: false,
         });
 
+        //adds border to area for that player
         $(p2Area).addClass("border");
 
         $("#login").empty();
@@ -343,8 +371,8 @@ $("#display").on("click", ".gameButton", function () {
                 $("#displayP1").append(scissorImage);
             }
 
-            if(!player2ChoiceSelected && player1ChoiceSelected){
-            $("#displayP2").append("<br>Still Deciding");
+            if (!player2ChoiceSelected && player1ChoiceSelected) {
+                $("#displayP2").append("<br>Still Deciding");
             }
         }
 
@@ -371,8 +399,8 @@ $("#display").on("click", ".gameButton", function () {
                 $("#displayP2").append(scissorImage);
             }
         }
-        if(!player1ChoiceSelected && player2ChoiceSelected){
-        $("#displayP1").append("<br>Still Deciding");
+        if (!player1ChoiceSelected && player2ChoiceSelected) {
+            $("#displayP1").append("<br>Still Deciding");
         }
     }
 })
@@ -401,6 +429,7 @@ player1.on("value", function (snapshot) {
     player1ChoiceSelected = snapshot.val().player1ChoiceSelected;
     //displays name
     $("#nameP1").text("Player 1: " + p1.name);
+   
     //displays score
     if (p1.name !== "") {
         $("#scoreP1").html("<strong>Wins: </strong>" + p1.wins + " <strong>Loses: </strong>" + p1.loses);
@@ -422,8 +451,8 @@ player2.on("value", function (snapshot) {
     player2ChoiceSelected = snapshot.val().player2ChoiceSelected;
     //displays name
     $("#nameP2").html("Player 2: " + p2.name);
-    //displays score
 
+    //displays score
     if (p2.name !== "") {
         $("#scoreP2").html("<strong>Wins: </strong>" + p2.wins + " <strong>Loses: </strong>" + p2.loses);
     }
@@ -455,19 +484,16 @@ chat.orderByChild("dateAdded").limitToLast(1).on("child_added", function (childS
     var chatComment = sv.comment;
     var chatDateAdded = sv.dateAdded;
     var chatName = sv.name;
-    console.log(sv.comment + sv.dateAdded + sv.name)
+    
     //could not get date to display properly
     var dateUTC = moment.utc(moment(chatDateAdded, "MM-DD-YYYY HH:mm:ss"));
 
 
     $("#chatArea").append("<div><strong>" + chatName + " : </strong>" + chatComment + "</div>");
-    
+
 
     //makes chat bar scrol to bottom
     $("#chatArea").scrollTop($("#chatArea")[0].scrollHeight);
-
-
-
 
 }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
